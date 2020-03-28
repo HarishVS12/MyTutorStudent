@@ -42,6 +42,46 @@
           ]
         }
       }
+<<<<<<< HEAD
+=======
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861778414883:android:3734d88587b22ac42f9096",
+        "android_client_info": {
+          "package_name": "com.mytutor.mytutorteacher"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "861778414883-01rq9nnfi7c7h3qrrsve11i69lk0uurc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mytutor.mytutorteacher",
+            "certificate_hash": "12d6f6e476f4c68ae40d7ee70ec12119e19243d0"
+          }
+        },
+        {
+          "client_id": "861778414883-222j2vedb0o5japjlfjghg27hstudh19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfhvSEE6C4Icp6_7QtjzhFzhI_sOlq2-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861778414883-222j2vedb0o5japjlfjghg27hstudh19.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+>>>>>>> origin/master
     }
   ],
   "configuration_version": "1"

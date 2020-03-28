@@ -1,24 +1,29 @@
-package com.mytutor.mytutorstudent;
+package com.mytutor.mytutorstudent.ui;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Toast;
-import android.widget.EditText;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.mytutor.mytutorstudent.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +32,9 @@ import java.util.Map;
 public class RegisterAct extends AppCompatActivity {
 
     private EditText ed_mail, ed_pass, ed_confirmPass, ed_Name;
-    private Button btn_register;
+    private MaterialButton btn_register;
     private FirebaseFirestore db;
+    private FirebaseAuth auth;
     private CollectionReference collectionReference;
     private String mail, pass, confPass, name;
     private static final String COLLECTION_NAME = "student";
@@ -37,7 +43,7 @@ public class RegisterAct extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        auth = FirebaseAuth.getInstance();
         declaration();
 
         btn_register.setOnClickListener(new View.OnClickListener() {
@@ -71,28 +77,29 @@ public class RegisterAct extends AppCompatActivity {
 
     }
 
-    private void MailExists(final String pmail){
+    private void MailExists(final String pmail) {
 
         db.collection(COLLECTION_NAME)
-                .whereEqualTo("Email",pmail)
+                .whereEqualTo("Email", pmail)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         int found = 0;
-                        try{
-                            for(QueryDocumentSnapshot document : task.getResult()){
-                                if(pmail.equals(document.get("Email"))){
+                        try {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (pmail.equals(document.get("Email"))) {
 //                                Toast.makeText(RegisterAct.this, "pmail : " + pmail+" doc : " + document, Toast.LENGTH_SHORT).show();
-                                    found=1;
+                                    found = 1;
                                 }
                             }
-                        }catch(NullPointerException e){
+                        } catch (NullPointerException e) {
                             Toast.makeText(RegisterAct.this, "No Account!", Toast.LENGTH_SHORT).show();
                         }
-                        if(found==0) addData();
-                        else Toast.makeText(RegisterAct.this, "E-Mail Already Registered!", Toast.LENGTH_SHORT).show();
+                        if (found == 0) addData();
+                        else
+                            Toast.makeText(RegisterAct.this, "E-Mail Already Registered!", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -111,28 +118,39 @@ public class RegisterAct extends AppCompatActivity {
     }
 
     private void addData() {
-
-        Map<String, Object> user = new HashMap<>();
-        user.put("Email", mail);
-        user.put("Name", name);
-        user.put("Password", pass);
-
-        db.collection(COLLECTION_NAME)
-                .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(RegisterAct.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
-//                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
+        auth.createUserWithEmailAndPassword(mail, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(RegisterAct.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("Email", mail);
+                    user.put("uuid", auth.getUid());
+                    user.put("Name", name);
+                    user.put("Password", pass);
+
+                    db.collection(COLLECTION_NAME)
+                            .add(user)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    startActivity(new Intent(RegisterAct.this, DashboardActivity.class));
+
+                                }
+
+                            }).
+                            addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(RegisterAct.this, "Registration failed!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                }
+
+
             }
         });
 
-//        finish();
 
     }
 

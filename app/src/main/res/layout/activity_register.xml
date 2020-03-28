@@ -5,98 +5,118 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    android:background="#ffc107"
-    tools:context=".RegisterAct"
-    >
+    tools:context=".ui.RegisterAct">
 
     <ImageView
         android:id="@+id/im_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:src="@drawable/ic_launcher_background"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintHorizontal_bias="0.45"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
+        app:layout_constraintTop_toTopOf="@+id/guideline8" />
 
     <EditText
         android:id="@+id/ed_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="9dp"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="9dp"
         android:hint="Enter the E-Mail Id"
-        app:layout_constraintVertical_bias="0.3"
         app:layout_constraintBottom_toTopOf="@+id/ed_pass"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/im_logo"
-        app:layout_constraintVertical_chainStyle="packed"
-        />
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <EditText
         android:id="@+id/ed_pass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="9dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="9dp"
         android:hint="Enter the Password"
         app:layout_constraintBottom_toTopOf="@+id/ed_confPass"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ed_email"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/ed_email" />
 
     <EditText
         android:id="@+id/ed_confPass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="9dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="9dp"
         android:hint="Confirm your password"
         app:layout_constraintBottom_toTopOf="@+id/ed_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ed_pass"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/ed_pass" />
 
     <EditText
         android:id="@+id/ed_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="9dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="9dp"
         android:hint="Enter your name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ed_confPass"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/ed_confPass" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_register"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:backgroundTint="@color/colorAccent"
         android:text="Register"
-        android:textColor="#ffc107"
-        android:background="@drawable/button_round"
-        android:layout_marginEnd="9dp"
-        android:layout_marginStart="10dp"
+        app:cornerRadius="8dp"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintHorizontal_bias="0.526"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toBottomOf="@+id/ed_name"
-        app:layout_constraintVertical_bias="0.149"
-        />
+        app:layout_constraintVertical_bias="0.149" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.09" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.36" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
