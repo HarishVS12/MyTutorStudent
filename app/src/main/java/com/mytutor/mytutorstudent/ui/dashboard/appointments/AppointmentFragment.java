@@ -22,11 +22,9 @@ import com.mytutor.mytutorstudent.R;
 import com.mytutor.mytutorstudent.adapter.recyclerview.AppointmentListAdapter;
 import com.mytutor.mytutorstudent.ui.utils.AppointmentMap;
 import com.mytutor.mytutorstudent.ui.utils.Collection;
-import com.mytutor.mytutorstudent.ui.utils.TeacherMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /*
 @Author cr7
@@ -74,7 +72,7 @@ public class AppointmentFragment extends Fragment implements AppointmentListAdap
     public void onResume() {
         super.onResume();
 
-        firebaseFirestore.collection(Collection.APPOINTMENTS).whereEqualTo(AppointmentMap.STUDENT_ID, auth.getUid()).whereEqualTo(AppointmentMap.STATUS_CODE, 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firebaseFirestore.collection(Collection.APPOINTMENTS).whereLessThanOrEqualTo(AppointmentMap.STATUS_CODE, 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -94,17 +92,10 @@ public class AppointmentFragment extends Fragment implements AppointmentListAdap
 
     @Override
     public void onAppointmentCancelled(int position) {
+
         final HashMap<String, Object> map = appointmentList.get(position);
-        Map<String, Object> appointment = new HashMap<>();
-        appointment.put(AppointmentMap.PREFFERED_TIME, map.get(TeacherMap.PREFFERED_TIME));
-        appointment.put(AppointmentMap.COST_PER_SESSION, map.get(TeacherMap.COST_PER_SESSION));
-        appointment.put(AppointmentMap.SPECIALISED_IN, map.get(TeacherMap.SPECIALISED_IN));
-        appointment.put(AppointmentMap.STUDENT_ID, auth.getUid());
-        appointment.put(AppointmentMap.TEACHER_ID, map.get(TeacherMap.UUID));
-        appointment.put(AppointmentMap.RATING, map.get(TeacherMap.RATING));
-        appointment.put(AppointmentMap.TEACHER_NAME, map.get(TeacherMap.NAME));
-        appointment.put(AppointmentMap.STATUS_CODE, -1);
-        firebaseFirestore.collection(Collection.APPOINTMENTS).document(auth.getUid() + map.get(TeacherMap.UUID)).update(AppointmentMap.STATUS_CODE, 1).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+        firebaseFirestore.collection(Collection.APPOINTMENTS).document((String) map.get(AppointmentMap.APPOINTMENT_ID)).update(AppointmentMap.STATUS_CODE, -1).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 onResume();

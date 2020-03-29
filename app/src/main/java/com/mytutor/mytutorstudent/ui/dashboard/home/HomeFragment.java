@@ -103,11 +103,12 @@ public class HomeFragment extends Fragment implements TeacherListAdapter.Teacher
         appointment.put(AppointmentMap.COST_PER_SESSION, map.get(TeacherMap.COST_PER_SESSION));
         appointment.put(AppointmentMap.SPECIALISED_IN, map.get(TeacherMap.SPECIALISED_IN));
         appointment.put(AppointmentMap.STUDENT_ID, auth.getUid());
+        appointment.put(AppointmentMap.APPOINTMENT_ID, auth.getUid() + map.get(TeacherMap.UUID));
         appointment.put(AppointmentMap.TEACHER_ID, map.get(TeacherMap.UUID));
         appointment.put(AppointmentMap.RATING, map.get(TeacherMap.RATING));
         appointment.put(AppointmentMap.TEACHER_NAME, map.get(TeacherMap.NAME));
         appointment.put(AppointmentMap.STATUS_CODE, 0);
-        firebaseFirestore.collection(Collection.APPOINTMENTS).document(auth.getUid() + map.get(TeacherMap.UUID)).set(appointment).addOnSuccessListener(new OnSuccessListener<Void>() {
+        firebaseFirestore.collection(Collection.APPOINTMENTS).document((String) appointment.get(AppointmentMap.APPOINTMENT_ID)).set(appointment).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 
