@@ -1,4 +1,4 @@
-package com.mytutor.mytutorstudent.ui;
+package com.mytutor.mytutorstudent.ui.splash;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.mytutor.mytutorstudent.R;
+import com.mytutor.mytutorstudent.ui.authentication.signin.LoginActivity;
+import com.mytutor.mytutorstudent.ui.dashboard.DashboardActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
 

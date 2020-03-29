@@ -1,4 +1,4 @@
-package com.mytutor.mytutorstudent.ui;
+package com.mytutor.mytutorstudent.ui.authentication.signin;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +22,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mytutor.mytutorstudent.R;
+import com.mytutor.mytutorstudent.ui.authentication.signup.RegisterAct;
+import com.mytutor.mytutorstudent.ui.dashboard.DashboardActivity;
 
 public class LoginActivity extends AppCompatActivity {
 

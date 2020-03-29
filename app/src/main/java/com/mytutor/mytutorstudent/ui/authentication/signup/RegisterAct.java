@@ -1,10 +1,9 @@
-package com.mytutor.mytutorstudent.ui;
+package com.mytutor.mytutorstudent.ui.authentication.signup;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mytutor.mytutorstudent.R;
+import com.mytutor.mytutorstudent.ui.dashboard.DashboardActivity;
 
 import java.util.HashMap;
 import java.util.Map;

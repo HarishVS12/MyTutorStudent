@@ -10,11 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.RegisterAct" />
-        <activity android:name=".ui.DashboardActivity" />
-        <activity android:name=".ui.LoginActivity" />
+            android:name=".ui.authentication.signup.RegisterAct" />
+        <activity android:name=".ui.dashboard.DashboardActivity" />
+        <activity android:name=".ui.authentication.signin.LoginActivity" />
         <activity
-            android:name=".ui.SplashScreenActivity"
+            android:name=".ui.splash.SplashScreenActivity"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,4 @@
-package com.mytutor.mytutorstudent.ui;
+package com.mytutor.mytutorstudent.ui.dashboard;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,9 +9,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mytutor.mytutorstudent.R;
+import com.mytutor.mytutorstudent.adapter.viewpager.DashboardPagerAdapter;
+import com.mytutor.mytutorstudent.ui.authentication.signin.LoginActivity;
 
 /*
 @Author cr7
@@ -28,12 +33,18 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
         setSupportActionBar(toolbar);
         auth = FirebaseAuth.getInstance();
         findViewById(R.id.menu).setOnClickListener(this);
+        TabLayout tableLayout = findViewById(R.id.dashboard_tabLayout);
+        ViewPager viewPager = findViewById(R.id.dashboard_viewpager);
+        DashboardPagerAdapter dashboardPagerAdapter = new DashboardPagerAdapter(getSupportFragmentManager(),
+                FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        viewPager.setAdapter(dashboardPagerAdapter);
+        tableLayout.setupWithViewPager(viewPager);
     }
 
 
     private void onLogout() {
         auth.signOut();
-        startActivity(new Intent(DashboardActivity.this,LoginActivity.class));
+        startActivity(new Intent(DashboardActivity.this, LoginActivity.class));
         finish();
     }
 
