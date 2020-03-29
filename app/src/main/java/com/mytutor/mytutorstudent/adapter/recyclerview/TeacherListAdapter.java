@@ -39,7 +39,7 @@ import java.util.HashMap;
         HashMap<String, Object> hashMap = teacherArrayList.get(position);
         holder.teacherName.setText((String) hashMap.get(TeacherMap.NAME));
         holder.prefferedTime.setText((String) hashMap.get(TeacherMap.PREFFERED_TIME));
-        holder.costPerSession.setText("$ " +String.valueOf(hashMap.get(TeacherMap.COST_PER_SESSION) + " per Session"));
+        holder.costPerSession.setText("$ " + String.valueOf(hashMap.get(TeacherMap.COST_PER_SESSION) + " per Session"));
         holder.specialisedArea.setText((String) hashMap.get(TeacherMap.SPECIALISED_IN));
         holder.ratingLabel.setText((String.valueOf(hashMap.get(TeacherMap.RATING) + "/5")));
         holder.ratingBar.setRating(Float.valueOf((String.valueOf(hashMap.get(TeacherMap.RATING)))));
@@ -51,7 +51,7 @@ import java.util.HashMap;
         return teacherArrayList.size();
     }
 
-    public static class TeacherViewHolder extends RecyclerView.ViewHolder {
+    public static class TeacherViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView teacherName;
         private TextView specialisedArea;
         private TextView costPerSession;
@@ -72,6 +72,12 @@ import java.util.HashMap;
             ratingBar = itemView.findViewById(R.id.container_teacher_rating_bar);
             ratingLabel = itemView.findViewById(R.id.container_teacher_rating_label);
             specialisedArea.setSelected(true);
+            makeAppointment.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            teacherInteractionListner.onAppointed(getAdapterPosition());
         }
 
         public interface TeacherInteractionListner {

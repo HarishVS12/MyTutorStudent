@@ -18,7 +18,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -129,21 +128,19 @@ public class RegisterAct extends AppCompatActivity {
                     user.put("Password", pass);
 
                     db.collection(COLLECTION_NAME)
-                            .add(user)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            .document(auth.getUid())
+                            .set(user)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
-                                public void onSuccess(DocumentReference documentReference) {
+                                public void onSuccess(Void aVoid) {
                                     startActivity(new Intent(RegisterAct.this, DashboardActivity.class));
-
                                 }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
 
-                            }).
-                            addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(RegisterAct.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                        }
+                    });
 
                 }
 

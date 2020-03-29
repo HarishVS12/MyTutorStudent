@@ -11,19 +11,34 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mytutor.mytutorstudent.R;
 import com.mytutor.mytutorstudent.adapter.recyclerview.AppointmentListAdapter;
+import com.mytutor.mytutorstudent.ui.utils.AppointmentMap;
+import com.mytutor.mytutorstudent.ui.utils.Collection;
+import com.mytutor.mytutorstudent.ui.utils.TeacherMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
 @Author cr7
 @CreatedOn 3/28/2020
 */
-public class AppointmentFragment extends Fragment {
+public class AppointmentFragment extends Fragment implements AppointmentListAdapter.AppointmentInteractionListener {
     public static final String FRAGMENT_TYPE = "fragment_type";
     private RecyclerView mRecyclerview;
     private AppointmentListAdapter appointmentListAdapter;
+    private FirebaseFirestore firebaseFirestore;
+    private FirebaseAuth auth;
+    private ArrayList<HashMap<String, Object>> appointmentList = new ArrayList();
 
     public static AppointmentFragment newInstance(String type) {
         Bundle args = new Bundle();
@@ -36,7 +51,9 @@ public class AppointmentFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        appointmentListAdapter=new AppointmentListAdapter(new ArrayList());
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        appointmentListAdapter = new AppointmentListAdapter(appointmentList, this);
     }
 
     @Nullable
@@ -51,5 +68,48 @@ public class AppointmentFragment extends Fragment {
         mRecyclerview = view.findViewById(R.id.appointment_recyclerview);
         mRecyclerview.setAdapter(appointmentListAdapter);
         mRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        firebaseFirestore.collection(Collection.APPOINTMENTS).whereEqualTo(AppointmentMap.STUDENT_ID, auth.getUid()).whereEqualTo(AppointmentMap.STATUS_CODE, 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    if (!appointmentList.isEmpty()) {
+                        appointmentList.clear();
+                    }
+                    for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                        HashMap<String, Object> map = (HashMap<String, Object>) queryDocumentSnapshot.getData();
+                        appointmentList.add(map);
+                    }
+                    appointmentListAdapter.notifyDataSetChanged();
+
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onAppointmentCancelled(int position) {
+        final HashMap<String, Object> map = appointmentList.get(position);
+        Map<String, Object> appointment = new HashMap<>();
+        appointment.put(AppointmentMap.PREFFERED_TIME, map.get(TeacherMap.PREFFERED_TIME));
+        appointment.put(AppointmentMap.COST_PER_SESSION, map.get(TeacherMap.COST_PER_SESSION));
+        appointment.put(AppointmentMap.SPECIALISED_IN, map.get(TeacherMap.SPECIALISED_IN));
+        appointment.put(AppointmentMap.STUDENT_ID, auth.getUid());
+        appointment.put(AppointmentMap.TEACHER_ID, map.get(TeacherMap.UUID));
+        appointment.put(AppointmentMap.RATING, map.get(TeacherMap.RATING));
+        appointment.put(AppointmentMap.TEACHER_NAME, map.get(TeacherMap.NAME));
+        appointment.put(AppointmentMap.STATUS_CODE, -1);
+        firebaseFirestore.collection(Collection.APPOINTMENTS).document(auth.getUid() + map.get(TeacherMap.UUID)).update(AppointmentMap.STATUS_CODE, 1).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                onResume();
+            }
+        });
+
     }
 }
