@@ -6,6 +6,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mytutor.mytutorstudent.R;
 import com.mytutor.mytutorstudent.ui.authentication.signin.LoginActivity;
@@ -19,9 +20,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        auth = FirebaseAuth.getInstance();
-        setContentView(R.layout.activity_splash_screen);
 
+        setContentView(R.layout.activity_splash_screen);
+        FirebaseApp.initializeApp(this);
+        auth = FirebaseAuth.getInstance();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

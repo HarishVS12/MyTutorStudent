@@ -42,8 +42,6 @@
           ]
         }
       }
-<<<<<<< HEAD
-=======
     },
     {
       "client_info": {
@@ -81,7 +79,6 @@
           ]
         }
       }
->>>>>>> origin/master
     }
   ],
   "configuration_version": "1"
