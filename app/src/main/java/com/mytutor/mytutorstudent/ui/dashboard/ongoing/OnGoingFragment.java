@@ -95,6 +95,8 @@ public class OnGoingFragment extends Fragment implements OnGoingListAdapter.OnGo
     public void onJoined(int position) {
         HashMap<String, Object> map = appointmentList.get(position);
         Intent intent = new Intent(getContext(), VideoChatViewActivity.class);
+        intent.putExtra(AppointmentMap.TEACHER_ID, (String) map.get(AppointmentMap.TEACHER_ID));
+        intent.putExtra(AppointmentMap.COST_PER_SESSION, (String) map.get(AppointmentMap.COST_PER_SESSION));
         intent.putExtra(AppointmentMap.APPOINTMENT_ID, (String) map.get(AppointmentMap.APPOINTMENT_ID));
         startActivity(intent);
     }

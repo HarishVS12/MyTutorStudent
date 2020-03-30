@@ -17,8 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.mytutor.mytutorstudent.R;
 import com.mytutor.mytutorstudent.ui.utils.AppointmentMap;
+import com.mytutor.mytutorstudent.ui.utils.Collection;
+import com.mytutor.mytutorstudent.ui.utils.TeacherMap;
 
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
@@ -54,7 +60,11 @@ public class VideoChatViewActivity extends AppCompatActivity {
     private ImageView mSwitchCameraBtn;
     private String roomName = "";
     // Customized logger view
-
+    private FirebaseAuth auth;
+    private String cost;
+    private boolean isSessionStarted;
+    private String teacherId;
+    private FirebaseFirestore firebaseFirestore;
 
     /**
      * Event handler registered into RTC engine for RTC callbacks.
@@ -67,6 +77,7 @@ public class VideoChatViewActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    isSessionStarted = false;
                     Log.i(TAG, "Join channel success, uid: " + (uid & 0xFFFFFFFFL));
 
                 }
@@ -78,6 +89,7 @@ public class VideoChatViewActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    isSessionStarted = true;
                     Log.i(TAG, "First remote video decoded, uid: " + (uid & 0xFFFFFFFFL));
                     setupRemoteVideo(uid);
                 }
@@ -91,7 +103,7 @@ public class VideoChatViewActivity extends AppCompatActivity {
                 public void run() {
                     Log.i(TAG, "User offline, uid: " + (uid & 0xFFFFFFFFL));
 
-                    onRemoteUserLeft();
+                    endCall();
                 }
             });
         }
@@ -135,12 +147,12 @@ public class VideoChatViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_chat_view);
+        auth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        teacherId = getIntent().getStringExtra(AppointmentMap.TEACHER_ID);
+        cost = getIntent().getStringExtra(AppointmentMap.COST_PER_SESSION);
         roomName = getIntent().getStringExtra(AppointmentMap.APPOINTMENT_ID);
         initUI();
-
-        // Ask for permissions at runtime.
-        // This is just an example set of permissions. Other permissions
-        // may be needed, and please refer to our online documents.
         if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
                 checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
                 checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
@@ -182,9 +194,6 @@ public class VideoChatViewActivity extends AppCompatActivity {
                 finish();
                 return;
             }
-
-            // Here we continue only if all permissions are granted.
-            // The permissions can also be granted in the system settings manually.
             initEngineAndJoinChannel();
         }
     }
@@ -199,8 +208,6 @@ public class VideoChatViewActivity extends AppCompatActivity {
     }
 
     private void initEngineAndJoinChannel() {
-        // This is our usual steps for joining
-        // a channel and starting a call.
         initializeEngine();
         setupVideoConfig();
         setupLocalVideo();
@@ -217,28 +224,15 @@ public class VideoChatViewActivity extends AppCompatActivity {
     }
 
     private void setupVideoConfig() {
-        // In simple use cases, we only need to enable video capturing
-        // and rendering once at the initialization step.
-        // Note: audio recording and playing is enabled by default.
         mRtcEngine.enableVideo();
-
-        // Please go to this page for detailed explanation
-        // https://docs.agora.io/en/Video/API%20Reference/java/classio_1_1agora_1_1rtc_1_1_rtc_engine.html#af5f4de754e2c1f493096641c5c5c1d8f
         mRtcEngine.setVideoEncoderConfiguration(new VideoEncoderConfiguration(
                 VideoEncoderConfiguration.VD_640x360,
-                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
+                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30,
                 VideoEncoderConfiguration.STANDARD_BITRATE,
                 VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT));
     }
 
     private void setupLocalVideo() {
-        // This is used to set a local preview.
-        // The steps setting local and remote view are very similar.
-        // But note that if the local user do not have a uid or do
-        // not care what the uid is, he can set his uid as ZERO.
-        // Our server will assign one and return the uid via the event
-        // handler callback function (onJoinChannelSuccess) after
-        // joining the channel successfully.
         mLocalView = RtcEngine.CreateRendererView(getBaseContext());
         mLocalView.setZOrderMediaOverlay(true);
         mLocalContainer.addView(mLocalView);
@@ -246,13 +240,9 @@ public class VideoChatViewActivity extends AppCompatActivity {
     }
 
     private void joinChannel() {
-        // 1. Users can only see each other after they join the
-        // same channel successfully using the same app id.
-        // 2. One token is only valid for the channel name that
-        // you use to generate this token.
         String token = getString(R.string.agora_access_token);
         if (TextUtils.isEmpty(token) || TextUtils.equals(token, "#YOUR ACCESS TOKEN#")) {
-            token = null; // default, no token
+            token = null;
         }
         mRtcEngine.joinChannel(token, roomName, "Extra Optional Data", 0);
     }
@@ -268,7 +258,37 @@ public class VideoChatViewActivity extends AppCompatActivity {
 
     private void leaveChannel() {
         mRtcEngine.leaveChannel();
-        finish();
+        if(isSessionStarted)
+        {
+            firebaseFirestore.collection(Collection.APPOINTMENTS).document(roomName).update(AppointmentMap.STATUS_CODE, 2).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    firebaseFirestore.collection(Collection.TEACHER).document(teacherId).update(TeacherMap.WALLET_AMOUNT, cost).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+        }
+        else
+        {
+            finish();
+        }
+
 
     }
 

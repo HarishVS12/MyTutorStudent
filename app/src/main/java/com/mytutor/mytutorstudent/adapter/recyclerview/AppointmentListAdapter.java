@@ -78,7 +78,7 @@ import java.util.HashMap;
             HashMap<String, Object> hashMap = appointmentList.get(position);
             completedHolder.teacherName.setText((String) hashMap.get(AppointmentMap.TEACHER_NAME));
             completedHolder.prefferedTime.setText((String) hashMap.get(AppointmentMap.PREFFERED_TIME));
-            if (hashMap.get(AppointmentMap.STATUS_CODE) ==(Integer) 1) {
+            if (hashMap.get(AppointmentMap.STATUS_CODE) ==(Integer) 2) {
                 completedHolder.appointmentStatus.setText("Completed");
             } else {
                 completedHolder.appointmentStatus.setText("Cancelled");
