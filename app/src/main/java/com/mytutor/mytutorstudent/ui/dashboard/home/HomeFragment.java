@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -27,6 +29,7 @@ import com.mytutor.mytutorstudent.ui.utils.TeacherMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /*
 @Author cr7
@@ -96,43 +99,58 @@ public class HomeFragment extends Fragment implements TeacherListAdapter.Teacher
     }
 
     @Override
-    public void onAppointed(int position) {
-        final HashMap<String, Object> map = teacherArrayList.get(position);
-        Map<String, Object> appointment = new HashMap<>();
-        appointment.put(AppointmentMap.PREFFERED_TIME, map.get(TeacherMap.PREFFERED_TIME));
-        appointment.put(AppointmentMap.COST_PER_SESSION, map.get(TeacherMap.COST_PER_SESSION));
-        appointment.put(AppointmentMap.SPECIALISED_IN, map.get(TeacherMap.SPECIALISED_IN));
-        appointment.put(AppointmentMap.STUDENT_ID, auth.getUid());
-        appointment.put(AppointmentMap.APPOINTMENT_ID, auth.getUid() + map.get(TeacherMap.UUID));
-        appointment.put(AppointmentMap.TEACHER_ID, map.get(TeacherMap.UUID));
-        appointment.put(AppointmentMap.RATING, map.get(TeacherMap.RATING));
-        appointment.put(AppointmentMap.TEACHER_NAME, map.get(TeacherMap.NAME));
-        appointment.put(AppointmentMap.STATUS_CODE, 0);
-        firebaseFirestore.collection(Collection.APPOINTMENTS).document((String) appointment.get(AppointmentMap.APPOINTMENT_ID)).set(appointment).addOnSuccessListener(new OnSuccessListener<Void>() {
+    public void onAppointed(final int position) {
+        firebaseFirestore.collection(Collection.STUDENT).document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                HashMap<String, Object> userData = (HashMap<String, Object>) documentSnapshot.getData();
+                final HashMap<String, Object> map = teacherArrayList.get(position);
+                Map<String, Object> appointment = new HashMap<>();
+                appointment.put(AppointmentMap.PREFFERED_TIME, map.get(TeacherMap.PREFFERED_TIME));
+                appointment.put(AppointmentMap.COST_PER_SESSION, map.get(TeacherMap.COST_PER_SESSION));
+                appointment.put(AppointmentMap.STUDENT_NAME, userData.get(AppointmentMap.STUDENT_NAME));
+                appointment.put(AppointmentMap.STUDENT_EMAIL, userData.get(AppointmentMap.STUDENT_EMAIL));
 
-                firebaseFirestore.collection(Collection.TEACHER).whereEqualTo(TeacherMap.UUID, map.get(TeacherMap.UUID)).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                appointment.put(AppointmentMap.SPECIALISED_IN, map.get(TeacherMap.SPECIALISED_IN));
+                appointment.put(AppointmentMap.STUDENT_ID, auth.getUid());
+                appointment.put(AppointmentMap.APPOINTMENT_ID, UUID.randomUUID().toString());
+                appointment.put(AppointmentMap.TEACHER_ID, map.get(TeacherMap.UUID));
+                appointment.put(AppointmentMap.RATING, map.get(TeacherMap.RATING));
+                appointment.put(AppointmentMap.TEACHER_NAME, map.get(TeacherMap.NAME));
+                appointment.put(AppointmentMap.STATUS_CODE, 0);
+                firebaseFirestore.collection(Collection.APPOINTMENTS).document((String) appointment.get(AppointmentMap.APPOINTMENT_ID)).set(appointment).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                                queryDocumentSnapshot.getReference().update(TeacherMap.IS_APPOINTMENT, true).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            onResume();
-                                        }
+                    public void onSuccess(Void aVoid) {
+
+                        firebaseFirestore.collection(Collection.TEACHER).whereEqualTo(TeacherMap.UUID, map.get(TeacherMap.UUID)).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                                        queryDocumentSnapshot.getReference().update(TeacherMap.IS_APPOINTMENT, true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    onResume();
+                                                }
+                                            }
+                                        });
+
+
                                     }
-                                });
-
-
+                                }
                             }
-                        }
+                        });
                     }
+
                 });
             }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
 
+            }
         });
+
     }
 }

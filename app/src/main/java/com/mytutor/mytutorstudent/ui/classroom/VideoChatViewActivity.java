@@ -258,23 +258,12 @@ public class VideoChatViewActivity extends AppCompatActivity {
 
     private void leaveChannel() {
         mRtcEngine.leaveChannel();
-        if(isSessionStarted)
-        {
-            firebaseFirestore.collection(Collection.APPOINTMENTS).document(roomName).update(AppointmentMap.STATUS_CODE, 2).addOnSuccessListener(new OnSuccessListener<Void>() {
+        if (isSessionStarted) {
+
+            firebaseFirestore.collection(Collection.TEACHER).document(teacherId).update(TeacherMap.IS_APPOINTMENT, false).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    firebaseFirestore.collection(Collection.TEACHER).document(teacherId).update(TeacherMap.WALLET_AMOUNT, cost).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            finish();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                        }
-                    });
-
+                    finish();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -284,60 +273,62 @@ public class VideoChatViewActivity extends AppCompatActivity {
             });
 
         }
-        else
-        {
-            finish();
+
+
+
+
+}
+
+
+
+
+
+public void onLocalAudioMuteClicked(View view){
+        mMuted=!mMuted;
+        mRtcEngine.muteLocalAudioStream(mMuted);
+        int res=mMuted?R.drawable.btn_mute:R.drawable.btn_unmute;
+        mMuteBtn.setImageResource(res);
         }
 
-
-    }
-
-    public void onLocalAudioMuteClicked(View view) {
-        mMuted = !mMuted;
-        mRtcEngine.muteLocalAudioStream(mMuted);
-        int res = mMuted ? R.drawable.btn_mute : R.drawable.btn_unmute;
-        mMuteBtn.setImageResource(res);
-    }
-
-    public void onSwitchCameraClicked(View view) {
+public void onSwitchCameraClicked(View view){
         mRtcEngine.switchCamera();
-    }
+        }
 
-    public void onCallClicked(View view) {
-        if (mCallEnd) {
-            startCall();
-            mCallEnd = false;
-            mCallBtn.setImageResource(R.drawable.btn_endcall);
-        } else {
-            endCall();
-            mCallEnd = true;
-            mCallBtn.setImageResource(R.drawable.btn_startcall);
+public void onCallClicked(View view){
+        if(mCallEnd){
+        startCall();
+        mCallEnd=false;
+        mCallBtn.setImageResource(R.drawable.btn_endcall);
+        }else{
+        endCall();
+        mCallEnd=true;
+        mCallBtn.setImageResource(R.drawable.btn_startcall);
         }
 
         showButtons(!mCallEnd);
-    }
+        }
 
-    private void startCall() {
+private void startCall(){
         setupLocalVideo();
         joinChannel();
-    }
+        }
 
-    private void endCall() {
+private void endCall(){
         removeLocalVideo();
         removeRemoteVideo();
         leaveChannel();
-    }
-
-    private void removeLocalVideo() {
-        if (mLocalView != null) {
-            mLocalContainer.removeView(mLocalView);
         }
-        mLocalView = null;
-    }
 
-    private void showButtons(boolean show) {
-        int visibility = show ? View.VISIBLE : View.GONE;
+private void removeLocalVideo(){
+        if(mLocalView!=null){
+        mLocalContainer.removeView(mLocalView);
+        }
+        mLocalView=null;
+        }
+
+private void showButtons(boolean show){
+        int visibility=show?View.VISIBLE:View.GONE;
         mMuteBtn.setVisibility(visibility);
         mSwitchCameraBtn.setVisibility(visibility);
-    }
-}
+        }
+        }

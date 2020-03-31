@@ -33,7 +33,9 @@ import java.util.HashMap;
     @Override
     public int getItemViewType(int position) {
         HashMap<String, Object> map = appointmentList.get(position);
-        if (map.get(AppointmentMap.STATUS_CODE) == (Integer) 0) {
+
+        Long statusCode = (Long) map.get(AppointmentMap.STATUS_CODE);
+        if (Math.round(statusCode) ==  0) {
             return CANCEL_TYPE;
         } else {
             return COMPLETED_TYPE;
@@ -50,6 +52,7 @@ import java.util.HashMap;
     @NonNull
     @Override
     public AppointBaseHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         if (viewType == CANCEL_TYPE) {
             return new AppointmentCancelHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.container_cancel_appointments, parent, false), appointmentInteractionListener);
         } else {
@@ -78,7 +81,8 @@ import java.util.HashMap;
             HashMap<String, Object> hashMap = appointmentList.get(position);
             completedHolder.teacherName.setText((String) hashMap.get(AppointmentMap.TEACHER_NAME));
             completedHolder.prefferedTime.setText((String) hashMap.get(AppointmentMap.PREFFERED_TIME));
-            if (hashMap.get(AppointmentMap.STATUS_CODE) ==(Integer) 2) {
+            Long statusCode = (Long) hashMap.get(AppointmentMap.STATUS_CODE);
+            if (Math.round(statusCode) == 2) {
                 completedHolder.appointmentStatus.setText("Completed");
             } else {
                 completedHolder.appointmentStatus.setText("Cancelled");

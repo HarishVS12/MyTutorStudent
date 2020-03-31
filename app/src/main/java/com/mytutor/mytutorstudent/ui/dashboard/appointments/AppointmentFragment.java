@@ -72,7 +72,7 @@ public class AppointmentFragment extends Fragment implements AppointmentListAdap
     public void onResume() {
         super.onResume();
 
-        firebaseFirestore.collection(Collection.APPOINTMENTS).whereLessThanOrEqualTo(AppointmentMap.STATUS_CODE, 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firebaseFirestore.collection(Collection.APPOINTMENTS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -81,7 +81,9 @@ public class AppointmentFragment extends Fragment implements AppointmentListAdap
                     }
                     for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                         HashMap<String, Object> map = (HashMap<String, Object>) queryDocumentSnapshot.getData();
-                        appointmentList.add(map);
+                        Long statusCode = (Long) map.get(AppointmentMap.STATUS_CODE);
+                        if ((Math.round(statusCode) == 0) || (Math.round(statusCode) == 2))
+                            appointmentList.add(map);
                     }
                     appointmentListAdapter.notifyDataSetChanged();
 

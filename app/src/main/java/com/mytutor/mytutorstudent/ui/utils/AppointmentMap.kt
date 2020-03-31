@@ -13,6 +13,8 @@ package com.mytutor.mytutorstudent.ui.utils
     const val SPECIALISED_IN = "Specialized Area"
     const val UUID = "uuid"
     const val IS_APPOINTMENT = "Already_Appointed"
+    const val STUDENT_NAME = "Name"
+    const val STUDENT_EMAIL = "Email"
     const val TEACHER_ID = "teacher_id"
     const val STUDENT_ID = "student_id"
     const val STATUS_CODE = "status_code"

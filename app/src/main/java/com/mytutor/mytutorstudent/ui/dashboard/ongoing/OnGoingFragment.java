@@ -59,7 +59,7 @@ public class OnGoingFragment extends Fragment implements OnGoingListAdapter.OnGo
     public void onResume() {
         super.onResume();
 
-        firebaseFirestore.collection(Collection.APPOINTMENTS).whereGreaterThan(AppointmentMap.STATUS_CODE, 0).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firebaseFirestore.collection(Collection.APPOINTMENTS).whereEqualTo(AppointmentMap.STATUS_CODE, 1).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
